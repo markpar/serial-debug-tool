@@ -6,6 +6,8 @@ import serial
 from datetime import datetime
 
 def run(device, baud, prefix=None):
+    debug_phrases = ('message over websocket', 'DEBUG: STREAM: ')
+    
     with serial.Serial(device, baud, timeout=0.1) as ser:
         while True:
             line = ser.readline()
@@ -13,7 +15,7 @@ def run(device, baud, prefix=None):
                 continue
             if prefix:
                 line = prefix() + line
-            if (line.find('DEBUG: STREAM: DEBUG: - ') > 0) and not (args.logDebug == True):
+            if any(line.find(s) > 0 for s in debug_phrases):
                 continue
 
             sys.stdout.write(line)
